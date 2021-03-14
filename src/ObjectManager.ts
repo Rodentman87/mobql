@@ -18,6 +18,8 @@ export class ObjectManager {
     object: T,
     queryName: string
   ) {
+    if (this.listRepos.has(object.name))
+      throw new Error(`Already registered type ${object.name}`);
     this.listRepos.set(
       object.name,
       new DataLoadedList(
@@ -31,19 +33,30 @@ export class ObjectManager {
     );
   }
 
-  getList<T extends typeof DataLoadedListEntry>(object: T) {
+  registerObject<T extends DataLoadedObject>(
+    object: new (...args: any[]) => T,
+    queryName: string
+  ) {
+    if (this.objectRepos.has(object.name))
+      throw new Error(`Already registered type ${object.name}`);
+    this.objectRepos.set(object.name, new object(queryName, this.dataLoader));
+  }
+
+  getList<T extends DataLoadedListEntry>(
+    object: new (...args: any[]) => T
+  ): DataLoadedList<T> {
     const repo = this.listRepos.get(object.name);
-    if (repo) return repo as DataLoadedList<typeof object.prototype>;
+    if (repo) return repo;
     throw new Error(
-      "This object has not been registered, make sure you register it before you try to get its repo"
+      `The type ${object.name} has not been registered, make sure you register it before you try to get its repo`
     );
   }
 
-  getObject<T extends typeof DataLoadedObject>(object: T) {
+  getObject<T extends DataLoadedObject>(object: new (...args: any[]) => T): T {
     const repo = this.objectRepos.get(object.name);
-    if (repo) return repo;
+    if (repo) return repo as T;
     throw new Error(
-      "This object has not been registered, make sure you register it before you try to get its repo"
+      `The type ${object.name} has not been registered, make sure you register it before you try to get its repo`
     );
   }
 }

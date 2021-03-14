@@ -7,8 +7,13 @@ import { ObjectManager } from "./ObjectManager";
 import { request } from "graphql-request";
 
 class MyDataLoader extends DataLoader {
-  runQuery(query: string, variables: any): Promise<any> {
-    return request("https://api.spacex.land/graphql/", query, variables);
+  async runQuery(query: string, variables: any): Promise<any> {
+    const output = await request(
+      "https://api.spacex.land/graphql/",
+      query,
+      variables
+    );
+    return output.data;
   }
 }
 
