@@ -3,23 +3,37 @@ import { DataLoadedListEntry } from "./DataLoadedListEntry";
 import { DataLoader } from "./DataLoader";
 import * as gql from "gql-query-builder";
 import IQueryBuilderOptions from "gql-query-builder/build/IQueryBuilderOptions";
+import { ObjectManager } from "./ObjectManager";
 
 export class DataLoadedList<T extends DataLoadedListEntry> {
   @observable private objects: Map<string, T>;
-  @observable private propsToBeFetched: Map<string, string[]>;
+  @observable private propsToBeFetched: Map<string, any[]>;
   private dataLoader: DataLoader;
   private queryName: string;
-  private instanceConstructor: new (id: string, list: DataLoadedList<any>) => T;
+  private objectManager: ObjectManager;
+  private instanceConstructor: new (
+    id: string,
+    list: DataLoadedList<any>,
+    objectManager: ObjectManager
+  ) => T;
+  private idName: string;
+  private idType: string;
 
   constructor(
-    ctor: new (id: string, list: DataLoadedList<any>) => T,
+    ctor: new (
+      id: string,
+      list: DataLoadedList<any>,
+      objectManager: ObjectManager
+    ) => T,
     dataLoader: DataLoader,
-    queryName: string
+    queryName: string,
+    objectManager: ObjectManager
   ) {
     this.objects = new Map();
     this.propsToBeFetched = new Map();
     this.dataLoader = dataLoader;
     this.queryName = queryName;
+    this.objectManager = objectManager;
     this.instanceConstructor = ctor;
     makeObservable(this);
     // Create the observer that fetches the data whenever new props need to be loaded
@@ -34,7 +48,11 @@ export class DataLoadedList<T extends DataLoadedListEntry> {
     if (this.objects.has(id)) {
       return this.objects.get(id)!;
     } else {
-      const newObject: T = new this.instanceConstructor(id, this);
+      const newObject: T = new this.instanceConstructor(
+        id,
+        this,
+        this.objectManager
+      );
       this.objects.set(id, newObject);
       return newObject;
     }
@@ -53,7 +71,14 @@ export class DataLoadedList<T extends DataLoadedListEntry> {
     });
   }
 
-  addPropsToBeFetched(id: string, props: string[]) {
+  addPropsToBeFetched(
+    id: string,
+    props: string[],
+    idName: string,
+    idType: string
+  ) {
+    this.idType = idType;
+    this.idName = idName;
     if (this.propsToBeFetched.has(id)) {
       const old = this.propsToBeFetched.get(id);
       old!.push(...props);
@@ -81,8 +106,8 @@ export class DataLoadedList<T extends DataLoadedListEntry> {
     this.propsToBeFetched.forEach((props, id) => {
       const variables: any = {};
       variables[`id${id}`] = {
-        name: "id",
-        type: "ID!",
+        name: this.idName,
+        type: this.idType,
         value: id,
       };
       options.push({

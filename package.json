@@ -7,11 +7,12 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "run:dev": "ts-node ./src/index.ts"
+    "run:dev": "ts-node ./src/testFile.ts"
   },
   "dependencies": {
     "gql-query-builder": "^3.5.5",
-    "mobx": "^6.1.8"
+    "mobx": "^6.1.8",
+    "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
     "@types/node": "^14.14.33",
