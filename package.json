@@ -1,6 +1,6 @@
 {
-  "name": "mobx-data-loader",
-  "version": "1.0.0",
+  "name": "mobql",
+  "version": "0.1.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "Rodentman87 <Rodentman87@gmail.com>",

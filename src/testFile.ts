@@ -24,7 +24,6 @@ class MyDataLoader extends DataLoader {
 }
 
 class Continent extends DataLoadedListEntry {
-  @observable href: string | null = null;
   @observable name: string | null = null;
   @observable
   @dataLoaded(DataLoadedPropTypes.ARRAY_LIST_OBJECT, "code")
@@ -76,6 +75,6 @@ autorun(() => {
   console.log(continentNorthAmerica.name);
   console.log(" Countries:");
   continentNorthAmerica.countries.map((country) => {
-    console.log("  ", country.code, "-", country.name);
+    console.log("  ", country.code, "-", country.name, country.emoji);
   });
 });
