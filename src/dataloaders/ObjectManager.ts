@@ -1,5 +1,6 @@
 import { DataLoadedList } from "./DataLoadedList";
 import { DataLoadedListEntry } from "./DataLoadedListEntry";
+import { DataLoadedListEntryManager } from "./DataLoadedListEntryManager";
 import { DataLoadedObject } from "./DataLoadedObject";
 import { DataLoader } from "./DataLoader";
 
@@ -35,24 +36,24 @@ export class ObjectManager {
    * @param queryName The name of the query to grab a single instance of this object, given an id
    * @param typename If the gql __typename is different from the name of this class, then provide it here
    */
-  registerListType<T extends typeof DataLoadedListEntry>(
-    object: T,
+  registerListType<T extends DataLoadedListEntry>(
+    object: new (id: string, manager: DataLoadedListEntryManager<any>) => T,
     queryName: string,
     typename?: string,
-    idName: string = "id"
+    idName: string = "id",
+    idType: string = "ID!"
   ) {
     if (this.listRepos.has(object.name))
       throw new Error(`Already registered type ${object.name}`);
     this.listRepos.set(
       object.name,
       new DataLoadedList(
-        (object as unknown) as new (
-          id: string,
-          list: DataLoadedList<typeof object.prototype>
-        ) => typeof object.prototype,
+        object,
         this.dataLoader,
+        this,
         queryName,
-        this
+        idName,
+        idType
       )
     );
     this.typenameToObjectName.set(typename || object.name, {
@@ -107,14 +108,20 @@ export class ObjectManager {
     }
   }
 
-  getId<T extends DataLoadedObject>(object: new (...args: any[]) => T) {
+  getIdName<T extends DataLoadedObject>(object: new (...args: any[]) => T) {
     const idName = this.objectNameToIdName.get(object.name);
     if (!idName)
       throw new Error(`No object registered for name ${object.name}`);
     return idName;
   }
 
-  getIdFromTypename(name: string) {
+  getIdFromType(typeName: string) {
+    const idName = this.objectNameToIdName.get(typeName);
+    if (!idName) throw new Error(`No object registered for name ${typeName}`);
+    return idName;
+  }
+
+  getIdNameFromTypename(name: string) {
     const objName = this.typenameToObjectName.get(name);
     if (!objName)
       throw new Error(`No object with __typename ${name} registered`);

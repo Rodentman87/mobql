@@ -1,6 +1,6 @@
 # MobQL
 
-This is a little proof-of-concept side project I've been working on. It allows you to define your data and how to get it from your GraphQL schema, then it will load properties as you access them, allowing you to not need to worry about designing your queries. No more having to modify your query to include a new property *and* update your code to use it. You just use it and it will load anything it needs to from the server. Best part, the cache can still be updated just like normal MobX objects, allowing you to use whatever event system you want to update your cache in real time. 
+This is a little proof-of-concept side project I've been working on. It allows you to define your data and how to get it from your GraphQL schema, then it will load properties as you access them, allowing you to not need to worry about designing your queries. No more having to modify your query to include a new property _and_ update your code to use it. You just use it and it will load anything it needs to from the server. Best part, the cache can still be updated just like normal MobX objects, allowing you to use whatever event system you want to update your cache in real time.
 
 ## So how do I use it?
 
@@ -14,18 +14,18 @@ Define you data as a class, generally you'll be extending `DataLoadedListEntry` 
 
 ```ts
 class Continent extends DataLoadedListEntry {
-  @observable name: string | null = null;
-  @observable
-  @dataLoaded(DataLoadedPropTypes.ARRAY_LIST_OBJECT, "code")
+  name: string | null = null;
+  code: string;
+  @MobQLArrayListObject("Country")
   countries: Country[] = [];
 
-  constructor(
-    id: string,
-    list: DataLoadedList<any>,
-    objectManager: ObjectManager
-  ) {
-    super(id, list, objectManager, "code");
-    makeDataLoaded(this);
+  constructor(id: string, manager: DataLoadedListEntryManager<any>) {
+    super(manager);
+    this.code = id;
+  }
+
+  getId(): string {
+    return this.code;
   }
 }
 ```
@@ -53,6 +53,7 @@ class MyDataLoader extends DataLoader {
     } catch (e) {
       console.log(e);
     }
+    // Make sure that your output puts the data in the data property of the return value, in the future other properties will be used for other data
     return { data: output };
   }
 }
@@ -71,7 +72,7 @@ objectManager.registerListType(Continent, "continent", "Continent", "code");
 objectManager.registerListType(Country, "country", "Country", "code");
 ```
 
-**(!) Important note: Reminder of the note from earlier, make sure you give the `ObjectManager` the proper name for the id property, otherwise this *will* cause issues**
+**(!) Important note: Reminder of the note from earlier, make sure you give the `ObjectManager` the proper name for the id property, otherwise this _will_ cause issues**
 
 ### Step 4 - Use the data!
 

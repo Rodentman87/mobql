@@ -4,6 +4,8 @@ import { DataLoader } from "./DataLoader";
 import * as gql from "gql-query-builder";
 import IQueryBuilderOptions from "gql-query-builder/build/IQueryBuilderOptions";
 import { ObjectManager } from "./ObjectManager";
+import { makeDataLoaded } from "../makeDataLoaded";
+import { DataLoadedListEntryManager } from "./DataLoadedListEntryManager";
 
 export class DataLoadedList<T extends DataLoadedListEntry> {
   @observable private objects: Map<string, T>;
@@ -13,27 +15,26 @@ export class DataLoadedList<T extends DataLoadedListEntry> {
   private objectManager: ObjectManager;
   private instanceConstructor: new (
     id: string,
-    list: DataLoadedList<any>,
-    objectManager: ObjectManager
+    manager: DataLoadedListEntryManager<any>
   ) => T;
   private idName: string;
   private idType: string;
 
   constructor(
-    ctor: new (
-      id: string,
-      list: DataLoadedList<any>,
-      objectManager: ObjectManager
-    ) => T,
+    ctor: new (id: string, manager: DataLoadedListEntryManager<any>) => T,
     dataLoader: DataLoader,
+    objectManager: ObjectManager,
     queryName: string,
-    objectManager: ObjectManager
+    idName: string,
+    idType: string
   ) {
     this.objects = new Map();
     this.propsToBeFetched = new Map();
     this.dataLoader = dataLoader;
     this.queryName = queryName;
     this.objectManager = objectManager;
+    this.idName = idName;
+    this.idType = idType;
     this.instanceConstructor = ctor;
     makeObservable(this);
     // Create the observer that fetches the data whenever new props need to be loaded
@@ -48,11 +49,14 @@ export class DataLoadedList<T extends DataLoadedListEntry> {
     if (this.objects.has(id)) {
       return this.objects.get(id)!;
     } else {
-      const newObject: T = new this.instanceConstructor(
+      const newObject: T = new DataLoadedListEntryManager(
         id,
         this,
-        this.objectManager
-      );
+        this.objectManager,
+        this.instanceConstructor
+      ).getChild();
+      // makeObservable(newObject);
+      makeDataLoaded(newObject);
       this.objects.set(id, newObject);
       return newObject;
     }
@@ -66,19 +70,12 @@ export class DataLoadedList<T extends DataLoadedListEntry> {
   @action
   setAll(objects: T[]) {
     objects.forEach((o: T) => {
-      const id = o.id as string;
+      const id = o.getId();
       this.objects.set(id, o);
     });
   }
 
-  addPropsToBeFetched(
-    id: string,
-    props: string[],
-    idName: string,
-    idType: string
-  ) {
-    this.idType = idType;
-    this.idName = idName;
+  addPropsToBeFetched(id: string, props: string[]) {
     if (this.propsToBeFetched.has(id)) {
       const old = this.propsToBeFetched.get(id);
       old!.push(...props);
@@ -97,7 +94,7 @@ export class DataLoadedList<T extends DataLoadedListEntry> {
   distributeFetchResponse(data: any) {
     Object.keys(data).forEach((key) => {
       const objId = key.slice(1); // Slice off the first char since that's just there to guaruntee it's a string
-      this.get(objId).setProps(data[key]);
+      this.get(objId).getManager().setProps(data[key]);
     });
   }
 

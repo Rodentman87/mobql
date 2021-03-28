@@ -1,8 +1,8 @@
 import { action } from "mobx";
 import {
-  dataLoaded,
   DataLoadedPropTypes,
   getDataLoadedType,
+  MobQLIgnore,
 } from "../annotations";
 
 export interface NestedParent {
@@ -10,8 +10,9 @@ export interface NestedParent {
 }
 
 export class NestedObject {
-  @dataLoaded(DataLoadedPropTypes.IGNORE) private parent: NestedParent;
-  @dataLoaded(DataLoadedPropTypes.IGNORE) private propName: string;
+  @MobQLIgnore() private parent: NestedParent;
+  @MobQLIgnore() private propName: string;
+  @MobQLIgnore() private propsToBeFetched: string[] = [];
 
   constructor(parent: NestedParent, propName: string) {
     this.parent = parent;
@@ -19,8 +20,11 @@ export class NestedObject {
   }
 
   addPropToBeFetched(prop: string) {
-    this.parent.addPropToBeFetched(`${this.propName}.${prop}`);
+    this.parent.addPropToBeFetched(this.propName);
+    this.propsToBeFetched.push(prop);
   }
+
+  getPropsToBeFetched() {}
 
   @action
   setProps(props: any) {
