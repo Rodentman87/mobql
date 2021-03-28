@@ -34,8 +34,6 @@ Make sure to mark every property as observable so that MobX can handle the react
 
 When referencing another `DataLoaded...` thing in a property, make sure to decorate it with the `dataLoaded` decorator and define its type. `OBJECT` for a `DataLoadedObject`, `LIST_OBJECT` for referencing a single `DataLoadedListEntry`, `ARRAY_LIST_OBJECT` for an array of `DataLoadedListEntry`s, and finally `NESTED` for a `NestedObject`.
 
-**(!) Important note: if your `DataLoadedListEntry` uses an id with a name other than `id`, make sure to specify it in the super call in the constructor, the registration, and the decorators in classes that reference it. This is a quirk of the way the package works atm. I didn't spend a ton of time on this since this is a proof-of-concept and not meant to be used in its current state in projects**
-
 ### Step 2 - Make your data loader
 
 This package doesn't require the use of any specific graphql client, all you need to do is make a DataLoader that will take a query and variables then return the result that your graphql library gives.
@@ -72,7 +70,7 @@ objectManager.registerListType(Continent, "continent", "Continent", "code");
 objectManager.registerListType(Country, "country", "Country", "code");
 ```
 
-**(!) Important note: Reminder of the note from earlier, make sure you give the `ObjectManager` the proper name for the id property, otherwise this _will_ cause issues**
+**(!) Important note: Make sure you give the `ObjectManager` the proper name for the id property of each object if it doesn't use `id`, otherwise this _will_ cause issues**
 
 ### Step 4 - Use the data!
 
