@@ -1,3 +1,4 @@
+import { MobQLIgnore } from "../annotations";
 import { DataLoadedObjectManager } from "./DataLoadedObjectManager";
 
 /**
@@ -6,7 +7,7 @@ import { DataLoadedObjectManager } from "./DataLoadedObjectManager";
  * for the first time
  */
 export abstract class DataLoadedObject {
-  mobqlManager: DataLoadedObjectManager<any>;
+  @MobQLIgnore() mobqlManager: DataLoadedObjectManager<any>;
 
   constructor(mobqlManager: DataLoadedObjectManager<any>) {
     this.mobqlManager = mobqlManager;

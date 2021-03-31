@@ -2,6 +2,7 @@ import { DataLoadedList } from "./DataLoadedList";
 import { DataLoadedListEntry } from "./DataLoadedListEntry";
 import { DataLoadedListEntryManager } from "./DataLoadedListEntryManager";
 import { DataLoadedObject } from "./DataLoadedObject";
+import { DataLoadedObjectManager } from "./DataLoadedObjectManager";
 import { DataLoader } from "./DataLoader";
 
 enum ObjectType {
@@ -70,7 +71,13 @@ export class ObjectManager {
   ) {
     if (this.objectRepos.has(object.name))
       throw new Error(`Already registered type ${object.name}`);
-    this.objectRepos.set(object.name, new object(queryName, this.dataLoader));
+    const obj = new DataLoadedObjectManager(
+      queryName,
+      this.dataLoader,
+      this,
+      object
+    );
+    this.objectRepos.set(object.name, obj.getChild());
     this.typenameToObjectName.set(typename || object.name, {
       objectName: object.name,
       type: ObjectType.OBJECT,

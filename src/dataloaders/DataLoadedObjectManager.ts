@@ -18,13 +18,14 @@ import {
 import { DataLoadedObject } from "./DataLoadedObject";
 import { DataLoadedList } from "./DataLoadedList";
 import { NestedObject } from "./NestedObject";
+import { makeDataLoaded } from "../makeDataLoaded";
 
 /**
  * A DataLoadedObject is a reference to an object in your GraphQL schema
  * this allows MobQL to automatically query the API for props when they're used
  * for the first time
  */
-export abstract class DataLoadedObjectManager<T extends DataLoadedObject> {
+export class DataLoadedObjectManager<T extends DataLoadedObject> {
   @MobQLIgnore()
   @observable
   private propsToBeFetched: (keyof T)[] = [];
@@ -48,6 +49,7 @@ export abstract class DataLoadedObjectManager<T extends DataLoadedObject> {
     this.dataLoader = dataLoader;
     this.objectManager = objectManager;
     this.managedObject = new child(this);
+    makeDataLoaded(this.managedObject);
     makeObservable(this);
     // Create the observer that fetches the data whenever new props need to be loaded
     autorun(() => {
@@ -57,8 +59,12 @@ export abstract class DataLoadedObjectManager<T extends DataLoadedObject> {
     });
   }
 
+  getChild() {
+    return this.managedObject;
+  }
+
   @computed
-  get loadingProps() {
+  get isLoadingProps() {
     return this.propsBeingFetched.length > 1;
   }
 

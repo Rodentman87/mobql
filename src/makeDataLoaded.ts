@@ -15,6 +15,8 @@ export function makeDataLoaded<
   makeObservable(object, annotations);
   Object.keys(object).forEach((key) => {
     if (getDataLoadedType(object, key) === DataLoadedPropTypes.IGNORE) return;
+    if (getDataLoadedType(object, key) === DataLoadedPropTypes.NESTED)
+      makeDataLoaded(object[key as keyof T] as any);
     onBecomeObserved(object, key, () => {
       object.addPropToBeFetched(key);
     });

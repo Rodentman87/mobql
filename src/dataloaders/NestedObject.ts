@@ -10,21 +10,15 @@ export interface NestedParent {
 }
 
 export class NestedObject {
-  @MobQLIgnore() private parent: NestedParent;
-  @MobQLIgnore() private propName: string;
   @MobQLIgnore() private propsToBeFetched: string[] = [];
 
-  constructor(parent: NestedParent, propName: string) {
-    this.parent = parent;
-    this.propName = propName;
-  }
-
   addPropToBeFetched(prop: string) {
-    this.parent.addPropToBeFetched(this.propName);
     this.propsToBeFetched.push(prop);
   }
 
-  getPropsToBeFetched() {}
+  getPropsToBeFetched() {
+    return this.propsToBeFetched;
+  }
 
   @action
   setProps(props: any) {

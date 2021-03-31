@@ -1,13 +1,13 @@
 {
   "name": "mobql",
-  "version": "0.2.0",
+  "version": "0.1.0",
+  "description": "A data manager built on MobX that loads your data from your GraphQL API as you need it",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "Rodentman87 <Rodentman87@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
-    "run:dev": "ts-node ./src/testFile.ts"
+    "build": "tsc"
   },
   "dependencies": {
     "gql-query-builder": "^3.5.5",
