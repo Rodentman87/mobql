@@ -1,11 +1,13 @@
 {
   "name": "mobql",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A data manager built on MobX that loads your data from your GraphQL API as you need it",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "Rodentman87 <Rodentman87@gmail.com>",
   "license": "MIT",
+  "homepage": "https://github.com/Rodentman87/mobql#readme",
+  "repository": "github:rodentman87/mobql",
   "scripts": {
     "build": "tsc"
   },
