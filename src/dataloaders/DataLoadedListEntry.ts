@@ -13,10 +13,6 @@ export abstract class DataLoadedListEntry {
     this.mobxManager = manager;
   }
 
-  get isLoadingProps() {
-    return this.mobxManager.isLoadingProps;
-  }
-
   addPropsToBeFetched(props: string[]) {
     this.mobxManager.addPropsToBeFetched(props);
   }

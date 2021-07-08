@@ -17,10 +17,10 @@ export class DataLoadedListEntryManager<T extends DataLoadedListEntry> {
   @observable
   private propsToBeFetched: (keyof T)[] = [];
   @observable
-  private propsBeingFetched: (keyof T)[] = [];
+  propsBeingFetched: (keyof T)[] = [];
   @observable isNull: boolean = false;
   private list: DataLoadedList<any>;
-  private propsAlreadyFetched: (keyof T)[] = [];
+  propsAlreadyFetched: (keyof T)[] = [];
   private objectManager: ObjectManager;
   private managedObject: T;
 
@@ -100,7 +100,7 @@ export class DataLoadedListEntryManager<T extends DataLoadedListEntry> {
 
   @action
   private markPropsAsFetched(props: (keyof T)[]) {
-    this.propsBeingFetched = this.propsToBeFetched.filter(
+    this.propsBeingFetched = this.propsBeingFetched.filter(
       (prop) => !props.includes(prop)
     );
     this.propsAlreadyFetched.push(...props);
@@ -113,7 +113,12 @@ export class DataLoadedListEntryManager<T extends DataLoadedListEntry> {
 
   @action
   addPropToBeFetched(prop: keyof T) {
-    if (this.propsAlreadyFetched.includes(prop)) return;
+    if (
+      this.propsAlreadyFetched.includes(prop) ||
+      this.propsBeingFetched.includes(prop) ||
+      this.propsToBeFetched.includes(prop)
+    )
+      return;
     this.propsToBeFetched.push(prop);
     this.propsAlreadyFetched.push(prop);
   }

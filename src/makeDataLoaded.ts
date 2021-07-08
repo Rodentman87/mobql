@@ -1,4 +1,4 @@
-import { makeObservable, observable, onBecomeObserved } from "mobx";
+import { computed, makeObservable, observable, onBecomeObserved } from "mobx";
 import { DataLoadedPropTypes, getDataLoadedType } from "./annotations";
 import { DataLoadedListEntry } from "./dataloaders/DataLoadedListEntry";
 import { DataLoadedObject } from "./dataloaders/DataLoadedObject";

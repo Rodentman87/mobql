@@ -55,7 +55,6 @@ export class DataLoadedList<T extends DataLoadedListEntry> {
         this.objectManager,
         this.instanceConstructor
       ).getChild();
-      // makeObservable(newObject);
       makeDataLoaded(newObject);
       this.objects.set(id, newObject);
       return newObject;
