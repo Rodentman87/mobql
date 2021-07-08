@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DataLoadedList should create a graphql request for all needed props 1`] = `
+Array [
+  "query ($id1: ID!, $id2: ID!, $id3: ID!) { o1:  (id: $id1) { prop1 } o2:  (id: $id2) { prop1, prop2 } o3:  (id: $id3) { prop1 } }",
+  Object {
+    "id1": "1",
+    "id2": "2",
+    "id3": "3",
+  },
+]
+`;
